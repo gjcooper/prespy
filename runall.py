@@ -31,7 +31,7 @@ def runit(orig, rtext, settings, factors, measures):
 def runall(fn, ofn):
     """Use runit on all lines extracted from fn and write to ofn"""
     with open(fn, 'r') as tf:
-        tests = [t.split() for t in tf.read().splitlines()]
+        tests = [t.split('\t') for t in tf.read().splitlines()]
 
     settings = {'mdur': 0.012, 'thresh': 0.2}  # Defaults
     factors = ['Lower Bound', 'Upper Bound', 'Port Time Diffs',
