@@ -1,5 +1,5 @@
 from __future__ import division
-from exceptions import LoadError
+from .exceptions import LoadError
 from datetime import datetime
 from itertools import takewhile
 import os
@@ -20,6 +20,21 @@ class Measure:
         """Should be set by user code, build a subset of a data object
         and return it"""
         raise NotImplementedError('Build should be defined by user code')
+
+
+class Event:
+    def __init__(self, bline, header):
+        """Create Event info from line and header dict"""
+        self._rawdata = bline
+
+        self.etype = bline[header['Event Type']]
+        self.code = bline[header['Code']]
+        self.time = int(bline[header['Time']])
+
+    def getdata(self, column):
+        """grab the data from this event from column"""
+        return _rawdata[column]
+        
 
 
 class Record:
@@ -52,37 +67,30 @@ class Record:
         #Grab Logfile Header
         for line in lines[l:]:
             if line.startswith('Subject'):
-                self.header = line.split('\t')
+                self.header = {line[c]: c for c in range(len(line))}
                 l += 1
                 break
             else:
                 l += 1
         if lines[l] != '':
             raise LoadError('Err: Expected blank line between header and body')
-        self.codecol = self.header.index('Code')
-        self.timecol = self.header.index('Time')
-        self.typecol = self.header.index('Event Type')
-        self.durcol = self.header.index('Duration')
-        self.rstatcol = self.header.index('Stim Type')
         #Grab data
         l += 1
         self.data = []
         for line in takewhile(lambda x: len(x) > 0, lines[l:]):
-            self.data.append(line.split('\t'))
-        self.subjectID = self.data[0][self.header.index('Subject')]
-
+            self.data.append(Event(line.split('\t'), self.header))
+        self.subjectID = self.data[0].getdata(self.header['Subject'])
 
     def segment(self, smarker, emarker):
         self.segments = []
         inblock = False
         for item in self.data:
-            code = item[self.header.index('Code')]
-            if code == smarker:
+            if item.code == smarker:
                 inblock = True
                 self.segments.append([])
-            elif code == emarker:
+            elif item.code == emarker:
                 if not inblock:
-                    raise LoadError('Err: found end block before start block')
+                    print('Warning: found end block before start block')
                 inblock = False
             elif inblock:
                 self.segments[-1].append(item)
@@ -92,9 +100,9 @@ def load(f):
     '''Load a file and create the resulting Record object'''
     return Record(f)
 
+
 def subset(n, builder):
     '''Create a Measure with name n and builder function'''
     m = Measure(n)
     m.build = builder
     return m
-
