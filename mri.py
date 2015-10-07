@@ -1,6 +1,6 @@
 # coding: utf-8
 import numpy as np
-with open('testKP-FoodAddiction.log', 'r') as lf:
+with open('pilot01-FoodAddiction3.log', 'r') as lf:
     lines = lf.read().splitlines()
     
 header = lines[3].split('\t')
@@ -15,6 +15,7 @@ for t in data:
     
 categories = {}
 categories['fixations'] = []
+categories['gaps'] = []
 categories['pulses'] = []
 inblock = False
 for e in data:
@@ -26,6 +27,9 @@ for t in data:
     elif t[codecol] == 'fix':
         categories['fixations'].append(t[timecol] - firstpulse)
         inblock = False
+    elif t[codecol] == 'gap':
+        categories['gaps'].append(t[timecol] - firstpulse)
+        inblock = False
     elif t[catcol]:
         if not inblock:
             if t[catcol] in categories:
@@ -34,7 +38,8 @@ for t in data:
                 categories[t[catcol]] = [t[timecol] - firstpulse]
             inblock = True
 
-np.set_printoptions(linewidth=20000)
+np.set_printoptions(precision=2, suppress=True, linewidth=20000)
 with open('blocks.m', 'w') as bf:
     for a in categories:
-        bf.write(a + ' = ' + str(np.array(categories[a])/10000.0) + '\n')
+        print(a, np.array(categories[a]))
+        bf.write(a + ' = ' + str(np.around(np.array(categories[a])/10000.0, 2)) + '\n')
