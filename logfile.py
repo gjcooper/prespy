@@ -29,7 +29,7 @@ class Event:
 
         self.etype = bline[header['Event Type']]
         self.code = bline[header['Code']]
-        self.time = int(bline[header['Time']])
+        self.time = float(bline[header['Time']])/10  # In ms
 
     def getdata(self, column):
         """grab the data from this event from column"""
