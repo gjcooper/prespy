@@ -25,7 +25,8 @@ class Measure:
 class Event:
     def __init__(self, bline, header):
         """Create Event info from line and header dict"""
-        self.data = {h: bline[header[h]] for h in header}
+        self.data = {h: (bline[header[h]] if header[h] < len(bline) else '')
+                     for h in header}
         self.etype = self.data['Event Type']
         self.code = self.data['Code']
         self.time = float(self.data['Time'])/10  # In ms
@@ -74,7 +75,7 @@ class Record:
         self.events = []
         for line in takewhile(lambda x: len(x) > 0, lines[l:]):
             self.events.append(Event(line.split('\t'), self.header))
-        self.subjectID = self.events[0].getdata(self.header['Subject'])
+        self.subjectID = self.events[0].data['Subject']
 
     def segment(self, smarker, emarker):
         self.segments = []
