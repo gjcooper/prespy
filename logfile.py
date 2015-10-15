@@ -66,7 +66,8 @@ class Record:
         #Grab Logfile Header
         for line in lines[l:]:
             if line.startswith('Subject'):
-                self.header = {line[c]: c for c in range(len(line))}
+                hline = line.split('\t')
+                self.header = {hline[c]: c for c in range(len(hline))}
                 l += 1
                 break
             else:
