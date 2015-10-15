@@ -25,15 +25,10 @@ class Measure:
 class Event:
     def __init__(self, bline, header):
         """Create Event info from line and header dict"""
-        self._rawdata = bline
-
-        self.etype = bline[header['Event Type']]
-        self.code = bline[header['Code']]
-        self.time = float(bline[header['Time']])/10  # In ms
-
-    def getdata(self, column):
-        """grab the data from this event from column"""
-        return self._rawdata[column]
+        self.data = {h: bline[header[h]] for h in header}
+        self.etype = self.data['Event Type']
+        self.code = self.data['Code']
+        self.time = float(self.data['Time'])/10  # In ms
 
 
 class Record:
