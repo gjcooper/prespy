@@ -33,8 +33,7 @@ class Event:
 
     def getdata(self, column):
         """grab the data from this event from column"""
-        return _rawdata[column]
-        
+        return self._rawdata[column]
 
 
 class Record:
@@ -76,10 +75,10 @@ class Record:
             raise LoadError('Err: Expected blank line between header and body')
         #Grab data
         l += 1
-        self.data = []
+        self.events = []
         for line in takewhile(lambda x: len(x) > 0, lines[l:]):
-            self.data.append(Event(line.split('\t'), self.header))
-        self.subjectID = self.data[0].getdata(self.header['Subject'])
+            self.events.append(Event(line.split('\t'), self.header))
+        self.subjectID = self.events[0].getdata(self.header['Subject'])
 
     def segment(self, smarker, emarker):
         self.segments = []
