@@ -46,20 +46,20 @@ class Record:
         with open(self.source, 'r') as lf:
             lines = lf.read().splitlines()
         l = 0  # A pointer which we'll use to step through the file
-        #Grab Scenario name
+        # Grab Scenario name
         if lines[l].split('-')[0].strip() == 'Scenario':
             self.exp = Experiment(lines[l].split('-')[1].strip())
             l += 1
         else:
             raise LoadError('Err: first line does not start with Scenario')
-        #Get Logfile timestamp
+        # Get Logfile timestamp
         if lines[l].split('-')[0].strip() == 'Logfile written':
             self.timestamp = datetime.strptime(lines[l].split('-')[1].strip(),
                                                '%m/%d/%Y %H:%M:%S')
             l += 1
         else:
             raise LoadError('Err: second line does not contain timestamp')
-        #Grab Logfile Header
+        # Grab Logfile Header
         for line in lines[l:]:
             if line.startswith('Subject'):
                 hline = line.split('\t')
@@ -70,7 +70,7 @@ class Record:
                 l += 1
         if lines[l] != '':
             raise LoadError('Err: Expected blank line between header and body')
-        #Grab data
+        # Grab data
         l += 1
         self.events = []
         for line in takewhile(lambda x: len(x) > 0, lines[l:]):
