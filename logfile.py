@@ -80,7 +80,7 @@ class Record:
     def segment(self, smarker, emarker):
         self.segments = []
         inblock = False
-        for item in self.data:
+        for item in self.events:
             if item.code == smarker:
                 inblock = True
                 self.segments.append([])
