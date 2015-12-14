@@ -31,6 +31,12 @@ class Event:
         self.code = self.data['Code']
         self.time = float(self.data['Time'])/10  # In ms
 
+    def __str__(self):
+        return self.etype+':'+self.code+':'+str(self.time)
+
+    def __repr__(self):
+        return str(self)
+
 
 class Record:
     def __init__(self, filename):
