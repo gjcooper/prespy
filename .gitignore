@@ -2,3 +2,6 @@
 *.m
 *.pyc
 *.swp
+dist/
+pypres.egg-info/
+venv/
