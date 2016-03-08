@@ -6,18 +6,18 @@ import sys
 def runit(orig, rtext, settings, factors, measures):
     """Run the whole procedure with certain settings"""
     for t in orig:
-        print t[0]
+        print(t[0])
         settings['mdur'] = float(t[3])
         settings['thresh'] = float(t[4])
         try:
             res = scla(t[0], t[1], t[2], **settings)
-        except ValueError, e:
-            print e.message
+        except ValueError as e:
+            print(e.message)
             continue
-        except ExtractError, e:
-            print e.message
+        except ExtractError as e:
+            print(e.message)
             continue
-        print 'Successfully extracted'
+        print('Successfully extracted')
 
         results = [t[0], t[3], t[4]]
         for f in factors:

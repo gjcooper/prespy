@@ -9,8 +9,8 @@ def run(fn, ldir, wdir):
     wavs = os.listdir(wdir)
     wavs = [w for w in wavs if w[-1] == 'v']
     for w in range(len(wavs)):
-        print wavs[w], logs[w]
-    if raw_input(qstring) == 'Y':
+        print(wavs[w], logs[w])
+    if input(qstring) == 'Y':
         labels = []
         for l in logs:
             with open(os.path.join(ldir, l), 'r') as lf:

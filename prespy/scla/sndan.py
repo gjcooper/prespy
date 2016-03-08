@@ -3,7 +3,7 @@ from __future__ import division
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 import numpy as np
-from itertools import takewhile
+from ..logfile import load
 
 
 class ExtractError(Exception):
@@ -37,12 +37,7 @@ def stdStats(datasets):
 
 def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
     """Implements similar logic to Neurobehavioural Systems SCLA program"""
-    with open(lfile, 'r') as lf:
-        lt = lf.read()
-    lhead = lt.splitlines()[3].split('\t')
-    ldata = lt.splitlines()[5:]
-    ldata = [l.split('\t') for l in ldata]
-    ldata = list(takewhile(lambda x: len(x) == len(lhead), ldata))
+    log = load(lfile)
     fs, sdata = wavfile.read(sfile)
     port = sdata.T[1-schan]
     snd = sdata.T[schan]
@@ -50,7 +45,7 @@ def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
     ms = max(snd)
     port = port/mp
     snd = snd/ms
-    #Grab each port event into a list
+    # Grab each port event into a list
     pcodes = []
     lcd = -20000  # Sufficiently small number
     for pi in range(len(port)):
@@ -58,7 +53,7 @@ def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
             if port[pi] > thresh:
                 pcodes.append(pi/fs*1000)
                 lcd = pi
-    #Grab each snd event into a list
+    # Grab each snd event into a list
     snds = []
     lsd = -20000
     for si in range(len(snd)):
@@ -67,17 +62,17 @@ def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
                 snds.append(si/fs*1000)
                 lsd = si
 
-    if (len(ldata) != len(pcodes)) or (len(pcodes) != len(snds)):
-        raise ExtractError(ldata, pcodes, snds)
+    if (len(log.events) != len(pcodes)) or (len(pcodes) != len(snds)):
+        raise ExtractError(log.events, pcodes, snds)
 
     datasets = {}
     datasets['Lower Bound'] = []
     datasets['Upper Bound'] = []
-    unc = lhead.index('Uncertainty')
+    unc = log.header['Uncertainty (Time)']
     for evt in range(len(snds)):
         datasets['Lower Bound'].append(snds[evt] - pcodes[evt])
         datasets['Upper Bound'].append(snds[evt] - pcodes[evt] +
-                                       float(ldata[evt][unc])/10)
+                                       float(log.events[evt].data[unc])/10)
     td, pl = timing(port, pcodes, snds, fs, mdur, thresh)
     datasets['Port Time Diffs'] = td['pcodes']
     datasets['Snd Time Diffs'] = td['snds']
