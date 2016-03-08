@@ -69,6 +69,9 @@ class Record:
         for line in lines[l:]:
             if line.startswith('Subject'):
                 hline = line.split('\t')
+                unc_types = [' (Duration)', ' (Time)']
+                hline = [h + unc_types.pop() if h == 'Uncertainty' else h
+                         for h in hline]
                 self.header = {hline[c]: c for c in range(len(hline))}
                 l += 1
                 break
