@@ -5,3 +5,4 @@
 dist/
 prespy.egg-info/
 venv/
+build/
