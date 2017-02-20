@@ -44,7 +44,7 @@ class Record:
             self.source = os.path.abspath(filename)
             self._extract()
         else:
-            raise LoadError('Err: Logfile not found', filename)
+            raise LoadError('Err: Logfile not found: {}'.format(filename))
 
     def _extract(self):
         """Extract usable data from the file into the record dictionary

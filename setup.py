@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from os import path
 
 __version__ = '0.0.4'
@@ -33,7 +33,8 @@ setup(
     install_requires=install_requires,
     dependency_links=dependency_links,
     license='GPL v2.0',
-    packages=['prespy'],
+    packages=find_packages(exclude=['docs', 'tests*']),
+    include_package_data=True,
     keywords=['Presentation', 'NBS', 'logfile'],
     entry_points={
         'console_scripts': ['scla=prespy.__main__:scla'],

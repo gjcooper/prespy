@@ -13,7 +13,7 @@ def scla():
 
     args = parser.parse_args()
 
-    res = sndan.scla(**args)
+    res = sndan.scla(**vars(args))
     report = ['==================================']
     for result in res:
         report.append(result)
