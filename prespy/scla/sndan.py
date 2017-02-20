@@ -35,12 +35,12 @@ def stdStats(datasets):
     return stats
 
 
-def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
+def scla(runid=None, soundfile=None, logfile=None, schannel=1, maxdur=0.012, thresh=0.2):
     """Implements similar logic to Neurobehavioural Systems SCLA program"""
-    log = load(lfile)
-    fs, sdata = wavfile.read(sfile)
-    port = sdata.T[1-schan]
-    snd = sdata.T[schan]
+    log = load(logfile)
+    fs, sdata = wavfile.read(soundfile)
+    port = sdata.T[1-schannel]
+    snd = sdata.T[schannel]
     mp = max(port)
     ms = max(snd)
     port = port/mp
@@ -49,7 +49,7 @@ def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
     pcodes = []
     lcd = -20000  # Sufficiently small number
     for pi in range(len(port)):
-        if pi - lcd > mdur*fs:
+        if pi - lcd > maxdur*fs:
             if port[pi] > thresh:
                 pcodes.append(pi/fs*1000)
                 lcd = pi
@@ -57,7 +57,7 @@ def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
     snds = []
     lsd = -20000
     for si in range(len(snd)):
-        if si - lsd > mdur*fs:
+        if si - lsd > maxdur*fs:
             if snd[si] > thresh:
                 snds.append(si/fs*1000)
                 lsd = si
@@ -73,13 +73,13 @@ def scla(pid, sfile, lfile, schan=1, mdur=0.012, thresh=0.2):
         datasets['Lower Bound'].append(snds[evt] - pcodes[evt])
         datasets['Upper Bound'].append(snds[evt] - pcodes[evt] +
                                        float(log.events[evt].data[unc])/10)
-    td, pl = timing(port, pcodes, snds, fs, mdur, thresh)
+    td, pl = timing(port, pcodes, snds, fs, maxdur, thresh)
     datasets['Port Time Diffs'] = td['pcodes']
     datasets['Snd Time Diffs'] = td['snds']
     datasets['Port Code Lengths'] = pl
 #    import pdb; pdb.set_trace()
-    plt.plot(snd[int(snds[0]*fs/1000)-100:int((snds[0]+mdur*1000)*fs/1000)])
-    plt.savefig(pid+'_firstsnd.png')
+    plt.plot(snd[int(snds[0]*fs/1000)-100:int((snds[0]+maxdur*1000)*fs/1000)])
+    plt.savefig(runid+'_firstsnd.png')
     plt.close()
     return stdStats(datasets)
 
