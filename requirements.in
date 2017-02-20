@@ -1,1 +1,4 @@
 # requirements.in
+numpy
+scipy
+matplotlib

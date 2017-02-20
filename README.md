@@ -10,7 +10,7 @@ Presentation data in various ways.
 Requirements
 ------------
 
-The following are required by certain elements of the package and will need to
+The following are required by certain elements of the package and may need to
 be installed separately if you are using them.
 
 + numpy (required by mri module and scla subpackage
