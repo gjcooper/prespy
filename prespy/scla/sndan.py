@@ -35,56 +35,60 @@ def stdStats(datasets):
     return stats
 
 
-def scla(runid=None, soundfile=None, logfile=None, schannel=1, maxdur=0.012, thresh=0.2):
-    """Implements similar logic to Neurobehavioural Systems SCLA program"""
-    log = load(logfile)
+def extract_channel_events(channel, maxdur=0.012, thresh=0.2, samplerate=44100):
+    '''From a single channel, extract events that reach *thresh*old and last
+    for *maxdur*'''
+    events = []
+    lastevt = -20000
+    for index, value in enumerate(channel):
+        if index - lastevt > maxdur*samplerate:
+            if value > thresh:
+                events.append(index/samplerate)
+                lastevt = index
+    return events
+
+
+def extract_sound_events(soundfile, schannel=1, maxdur=0.012, thresh=0.2, plot=True, runid='scla'):
     fs, sdata = wavfile.read(soundfile)
+    # Grab channels
     port = sdata.T[1-schannel]
     snd = sdata.T[schannel]
-    mp = max(port)
-    ms = max(snd)
-    port = port/mp
-    snd = snd/ms
-    # Grab each port event into a list
-    pcodes = []
-    lcd = -20000  # Sufficiently small number
-    for pi in range(len(port)):
-        if pi - lcd > maxdur*fs:
-            if port[pi] > thresh:
-                pcodes.append(pi/fs*1000)
-                lcd = pi
-    # Grab each snd event into a list
-    snds = []
-    lsd = -20000
-    for si in range(len(snd)):
-        if si - lsd > maxdur*fs:
-            if snd[si] > thresh:
-                snds.append(si/fs*1000)
-                lsd = si
+    # Normalise channels
+    port = port/max(port)
+    snd = snd/max(snd)
+    port_events = extract_channel_events(port, maxdur=maxdur, thresh=thresh, samplerate=fs)
+    snd_events = extract_channel_events(snd, maxdur=maxdur, thresh=thresh, samplerate=fs)
+    if plot:
+        plt.plot(snd[int(snd_events[0]*fs)-100:int((snd_events[0]+maxdur)*fs)])
+        plt.savefig(runid+'_firstsnd.png')
+        plt.close()
+    return fs, port_events, snd_events, port
 
+
+def scla(soundfile=None, logfile=None, **kwargs):
+    """Implements similar logic to Neurobehavioural Systems SCLA program"""
+    log = load(logfile)
+
+    fs, pcodes, snds, port = extract_sound_events(soundfile, **kwargs)
     if (len(log.events) != len(pcodes)) or (len(pcodes) != len(snds)):
         raise ExtractError(log.events, pcodes, snds)
 
     datasets = {}
     datasets['Lower Bound'] = []
     datasets['Upper Bound'] = []
-    unc = log.header['Uncertainty (Time)']
     for evt in range(len(snds)):
         datasets['Lower Bound'].append(snds[evt] - pcodes[evt])
         datasets['Upper Bound'].append(snds[evt] - pcodes[evt] +
-                                       float(log.events[evt].data[unc])/10)
-    td, pl = timing(port, pcodes, snds, fs, maxdur, thresh)
+                                       float(log.events[evt].data['Uncertainty (Time)'])*0.0001)  # Uncertainty in seconds
+    td, pl = timing(port, pcodes, snds, fs, **kwargs)
     datasets['Port Time Diffs'] = td['pcodes']
     datasets['Snd Time Diffs'] = td['snds']
     datasets['Port Code Lengths'] = pl
 #    import pdb; pdb.set_trace()
-    plt.plot(snd[int(snds[0]*fs/1000)-100:int((snds[0]+maxdur*1000)*fs/1000)])
-    plt.savefig(runid+'_firstsnd.png')
-    plt.close()
     return stdStats(datasets)
 
 
-def timing(port, pcodes, snds, fs, mdur, thresh):
+def timing(port, pcodes, snds, fs, maxdur=0, thresh=0, **kwargs):
     """extract extra info about port duration and time between stimuli"""
     timediffs = {'pcodes': [], 'snds': []}
     portlengths = []
@@ -93,9 +97,9 @@ def timing(port, pcodes, snds, fs, mdur, thresh):
     for s in range(1, len(snds)):
         timediffs['snds'].append(snds[s] - snds[s-1])
     for p in pcodes:
-        span = range(int(p*fs/1000) + 1, int((p+mdur*1000)*fs/1000))
+        span = range(int(p*fs) + 1, int((p+maxdur*1000)*fs))
         for pt in span:
             if port[pt] < thresh:
-                portlengths.append(pt/fs*1000 - p)
+                portlengths.append(pt/fs - p)
                 break
     return timediffs, portlengths

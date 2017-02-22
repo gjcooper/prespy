@@ -4,7 +4,7 @@ import argparse
 
 def scla():
     parser = argparse.ArgumentParser(description='Analyse sound latencies')
-    parser.add_argument('--runid', '-i', help='An id for the sound plot', default=None)
+    parser.add_argument('--runid', '-i', help='An id for the sound plot', default='scla')
     parser.add_argument('soundfile', help='A sound recording of port and sound output')
     parser.add_argument('logfile', help='Stimulus delivery recording of event sequence')
     parser.add_argument('--schannel', '-c', help='The channel sounds were recorded in', default=1)
@@ -19,7 +19,7 @@ def scla():
         report.append(result)
         for measure in ['mean', 'min', 'max', 'stddev']:
             report.append('\t{}: {}'.format(measure, res[result][measure]))
-        report.append('-------------------------------')
+        report.append('----------------------------------')
     report.append(report[0])
 
     print('\n'.join(report))
