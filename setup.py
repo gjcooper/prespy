@@ -1,16 +1,32 @@
 from setuptools import setup, find_packages
-from os import path
+import codecs
+import os
+import subprocess
+import sys
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 
-here = path.abspath(path.dirname(__file__))
+base_dir = os.path.abspath(os.path.dirname(__file__))
 
-# Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+
+def genRST():
+    pandoc_call = ['pandoc', '--from=markdown', '--to=rst', 'README.md']
+    try:
+        output = subprocess.run(pandoc_call, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if output.returncode:
+            print(output.stderr)
+            sys.exit()
+        output = output.stdout
+    except AttributeError:
+        try:
+            output = subprocess.check_output(pandoc_call)
+        except subprocess.CalledProcessError:
+            sys.exit()
+    return output.decode()
+
 
 # get the dependencies and installs
-with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
+with codecs.open(os.path.join(base_dir, 'requirements.txt'), encoding='utf-8') as f:
     all_reqs = f.read().split('\n')
 
 install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
@@ -21,7 +37,7 @@ setup(
     version=__version__,
     description='Package for working with the Neurobehavioural Systems' +
                 ' Presentation logfiles within python',
-    long_description=long_description,
+    long_description=genRST(),
     url='https://github.com/gjcooper/prespy',
     classifiers=[
         'Development Status :: 3 - Alpha',
