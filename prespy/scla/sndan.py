@@ -13,6 +13,11 @@ class ExtractError(Exception):
         self.logData, self.portData, self.sndData = logData, portData, sndData
         self.message = 'Extraction error, detected code lengths do not match'
 
+    def __str__(self):
+        """Represent this error as a string"""
+        elements = [self.message, len(self.logData), len(self.portData), len(self.sndData)]
+        return '{}\nLengths: Log({}), Port({}), Snds({})'.format(*elements)
+
 
 class ConvertError(Exception):
     """Raised when a log file number was not converted successfully"""

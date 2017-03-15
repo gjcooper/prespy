@@ -14,7 +14,11 @@ def scla():
 
     args = parser.parse_args()
 
-    res = sndan.scla(**vars(args))
+    try:
+        res = sndan.scla(**vars(args))
+    except sndan.ExtractError as e:
+        print(e)
+        sys.exit(1)
     report = ['==================================']
     for result in res:
         report.append(result)
