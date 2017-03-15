@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -53,6 +53,6 @@ setup(
     include_package_data=True,
     keywords=['Presentation', 'NBS', 'logfile'],
     entry_points={
-        'console_scripts': ['scla=prespy.__main__:scla'],
+        'console_scripts': ['pres-scla=prespy.__main__:scla'],
     }
 )
