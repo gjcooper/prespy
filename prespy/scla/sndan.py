@@ -47,7 +47,7 @@ def extract_channel_events(channel, maxdur=0.012, thresh=0.2, samplerate=44100):
     lastevt = -20000
     for index, value in enumerate(channel):
         if index - lastevt > maxdur*samplerate:
-            if value > thresh:
+            if abs(value) > thresh:
                 events.append(index/samplerate)
                 lastevt = index
     return events
