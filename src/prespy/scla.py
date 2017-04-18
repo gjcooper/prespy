@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from ..logfile import load
 
+datasets = {'Port_to_Port': None, 'Snd_to_Snd': None, 'Port_Length': None, 'Snd_Upper_Bound': [], 'Snd_Lower_Bound': []}
+
 
 class ExtractError(Exception):
     """Raised when an extraction goes wrong"""
@@ -78,18 +80,17 @@ def scla(soundfile=None, logfile=None, **kwargs):
     if (len(log.events) != len(pcodes)) or (len(pcodes) != len(snds)):
         raise ExtractError(log.events, pcodes, snds)
 
-    datasets = {}
-    datasets['Lower Bound'] = []
-    datasets['Upper Bound'] = []
+    thisdata = datasets.deepcopy()
     for evt in range(len(snds)):
-        datasets['Lower Bound'].append(snds[evt] - pcodes[evt])
-        datasets['Upper Bound'].append(snds[evt] - pcodes[evt] +
-                                       float(log.events[evt].data['Uncertainty (Time)']) * 0.0001)  # Uncertainty in seconds
+        # Uncertainty in seconds
+        uncertainty = float(log.events[evt].data['Uncertainty (Time)']) * 0.0001
+        thisdata['Snd_Lower_Bound'].append(snds[evt] - pcodes[evt])
+        thisdata['Snd_Upper_Bound'].append(snds[evt] - pcodes[evt] + uncertainty)
     td, pl = timing(port, pcodes, snds, fs, **kwargs)
-    datasets['Port Time Diffs'] = td['pcodes']
-    datasets['Snd Time Diffs'] = td['snds']
-    datasets['Port Code Lengths'] = pl
-    return stdStats(datasets)
+    thisdata['Port_to_Port'] = td['pcodes']
+    thisdata['Snd_to_Snd'] = td['snds']
+    thisdata['Port_Length'] = pl
+    return stdStats(thisdata)
 
 
 def timing(port, pcodes, snds, fs, maxdur=0, thresh=0, **kwargs):

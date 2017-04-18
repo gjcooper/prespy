@@ -1,4 +1,5 @@
-from prespy.scla import sndan
+from prespy.scla import ExtractError, scla
+from prespy.__about__ import __version__, __title__
 import sys
 import argparse
 
@@ -22,8 +23,8 @@ def scla_script():
     reports = cmdargs.pop('results')
 
     try:
-        res = sndan.scla(**cmdargs)
-    except sndan.ExtractError as e:
+        res = scla(**cmdargs)
+    except ExtractError as e:
         print(e)
         sys.exit(65)
     report = ['==================================']
