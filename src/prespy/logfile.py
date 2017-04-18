@@ -37,6 +37,10 @@ class Event:
     def __repr__(self):
         return str(self)
 
+    @property
+    def time_sec(self):
+        return self.time / 1000
+
 
 class Record:
     def __init__(self, filename):
