@@ -1,7 +1,8 @@
 # coding: utf-8
 from .logfile import load
-from prespy.exceptions import DataNotFoundException
+from prespy.exceptions import DataNotFoundError
 from collections import defaultdict
+
 
 def mri_timing(logfile, pulsecode=199, events=[]):
     """Load the logfile and extract timing information for events in relation
@@ -13,7 +14,7 @@ def mri_timing(logfile, pulsecode=199, events=[]):
             firstpulsetime = evt.time_sec
             break
     else:
-        raise DataNotFoundException('Pulse code {} not found in file: {}'.format(pulsecode, logfile))
+        raise DataNotFoundError('Pulse code {} not found in file: {}'.format(pulsecode, logfile))
 
     tupleevts = [e for e in events if isinstance(e, tuple)]
     categories = defaultdict(list)
@@ -26,40 +27,11 @@ def mri_timing(logfile, pulsecode=199, events=[]):
             if evt.data[te[0]] == te[1]:
                 categories[te[1]].append(evt.time_sec - firstpulsetime)
     return categories
-        
-        
-def write_matlab(mfile, timing_data):
+
+
+def write_matlab(mfile, timing_data, dec_places=2):
     """write the timing data to a matlab .m file format"""
     with open(mfile, 'w') as writer:
-        2
-        writer.write(
-
-    
-    
-inblock = False
-for e in data:
-    e[timecol] = int(e[timecol])
-
-for t in data:
-    if t[codecol] == '199':
-        categories['pulses'].append(t[timecol] - firstpulse)
-    elif t[codecol] == 'fix':
-        categories['fixations'].append(t[timecol] - firstpulse)
-        inblock = False
-    elif t[codecol] == 'gap':
-        categories['gaps'].append(t[timecol] - firstpulse)
-        inblock = False
-    elif t[catcol]:
-        if not inblock:
-            if t[catcol] in categories:
-                categories[t[catcol]].append(t[timecol] - firstpulse)
-            else:
-                categories[t[catcol]] = [t[timecol] - firstpulse]
-            inblock = True
-
-np.set_printoptions(precision=2, suppress=True, linewidth=20000)
-with open('blocks.m', 'w') as bf:
-    for a in categories:
-        #print('{} = [ {} ]'.format('a', ' '.join(['{:.2f}'.format(da/100.0) for da in d['a']])))
-        print(a, np.array(categories[a]))
-        bf.write(a + ' = ' + str(np.around(np.array(categories[a]) / 10000.0, 2)) + '\n')
+        for category in timing_data:
+            formatted = ' '.join(['{0:.{1}f}'.format(secs, dec_places) for secs in timing_data[category]])
+            writer.write('{} = [ {} ]\n'.format(category, formatted))

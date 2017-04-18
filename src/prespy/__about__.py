@@ -1,5 +1,5 @@
 
-__version__ = '0.0.7alpha01'
+__version__ = '0.0.7alpha02'
 
 __title__ = 'prespy'
 
