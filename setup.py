@@ -4,9 +4,14 @@ import os
 import subprocess
 import sys
 
-__version__ = '0.0.6'
-
 base_dir = os.path.abspath(os.path.dirname(__file__))
+src_dir = os.path.join(base_dir, 'src')
+# When executing the setup.py, we need to be able to import ourselves, this
+# means that we need to add the src/ directory to the sys.path.
+sys.path.insert(0, src_dir)
+about = {}
+with codecs.open(os.path.join(src_dir, 'prespy', '__about__.py')) as f:
+    exec(f.read(), about)
 
 
 def genRST():
@@ -30,26 +35,26 @@ with codecs.open(os.path.join(base_dir, 'requirements.txt'), encoding='utf-8') a
     all_reqs = f.read().split('\n')
 
 install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
-dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' not in x]
+dependency_links = [x.strip().replace('git+', '') for x in all_reqs if x.startswith('git+')]
 
 setup(
-    name='prespy',
-    version=__version__,
-    description='Package for working with the Neurobehavioural Systems' +
-                ' Presentation logfiles within python',
+    name=about['__title__'],
+    version=about['__version__'],
+    description=about['__summary__'],
     long_description=genRST(),
-    url='https://github.com/gjcooper/prespy',
+    url=about['__uri__'],
+    license=about['__license__'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3',
     ],
-    author='Gavin Cooper',
-    author_email='gjcooper@gmail.com',
+    author=about['__author__'],
+    author_email=about['__email__'],
     install_requires=install_requires,
     dependency_links=dependency_links,
-    license='GPL v2.0',
-    packages=find_packages(exclude=['docs', 'tests*']),
+    packages=find_packages(where='src', exclude=['tests*']),
+    package_dir={'': 'src'},
     include_package_data=True,
     keywords=['Presentation', 'NBS', 'logfile'],
     entry_points={

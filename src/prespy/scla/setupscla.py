@@ -26,5 +26,6 @@ def run(fn, ldir, wdir):
         with open(fn, 'w') as tf:
             tf.write(tt)
 
+
 if __name__ == '__main__':
     run(*sys.argv[1:])

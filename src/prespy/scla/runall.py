@@ -39,7 +39,7 @@ def runall(fn, ofn):
     measures = ['mean', 'min', 'max', 'stddev']
 
     rtext = 'ID\tmdur\tthresh\t'
-    rtext += '\t'.join([f+'_'+m for f in factors for m in measures]) + '\n'
+    rtext += '\t'.join([f + '_' + m for f in factors for m in measures]) + '\n'
     rtext = runit(tests, rtext, settings, factors, measures)
     with open(ofn, 'w') as rf:
         rf.write(rtext)

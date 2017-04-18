@@ -2,7 +2,7 @@
 import numpy as np
 with open('pilot01-FoodAddiction3.log', 'r') as lf:
     lines = lf.read().splitlines()
-    
+
 header = lines[3].split('\t')
 data = [l.split('\t') for l in lines[5:]]
 codecol = header.index('Code')
@@ -12,7 +12,7 @@ for t in data:
     if t[codecol] == '199':
         firstpulse = int(t[timecol])
         break
-    
+
 categories = {}
 categories['fixations'] = []
 categories['gaps'] = []
@@ -42,4 +42,4 @@ np.set_printoptions(precision=2, suppress=True, linewidth=20000)
 with open('blocks.m', 'w') as bf:
     for a in categories:
         print(a, np.array(categories[a]))
-        bf.write(a + ' = ' + str(np.around(np.array(categories[a])/10000.0, 2)) + '\n')
+        bf.write(a + ' = ' + str(np.around(np.array(categories[a]) / 10000.0, 2)) + '\n')

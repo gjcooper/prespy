@@ -46,9 +46,9 @@ def extract_channel_events(channel, maxdur=0.012, thresh=0.2, samplerate=44100):
     events = []
     lastevt = -20000
     for index, value in enumerate(channel):
-        if index - lastevt > maxdur*samplerate:
+        if index - lastevt > maxdur * samplerate:
             if abs(value) > thresh:
-                events.append(index/samplerate)
+                events.append(index / samplerate)
                 lastevt = index
     return events
 
@@ -56,16 +56,16 @@ def extract_channel_events(channel, maxdur=0.012, thresh=0.2, samplerate=44100):
 def extract_sound_events(soundfile, schannel=1, maxdur=0.012, thresh=0.2, plot=True, runid='scla'):
     fs, sdata = wavfile.read(soundfile)
     # Grab channels
-    port = sdata.T[1-schannel]
+    port = sdata.T[1 - schannel]
     snd = sdata.T[schannel]
     # Normalise channels
-    port = port/max(port)
-    snd = snd/max(snd)
+    port = port / max(port)
+    snd = snd / max(snd)
     port_events = extract_channel_events(port, maxdur=maxdur, thresh=thresh, samplerate=fs)
     snd_events = extract_channel_events(snd, maxdur=maxdur, thresh=thresh, samplerate=fs)
     if plot:
-        plt.plot(snd[int(snd_events[0]*fs)-100:int((snd_events[0]+maxdur)*fs)])
-        plt.savefig(runid+'_firstsnd.png')
+        plt.plot(snd[int(snd_events[0] * fs) - 100:int((snd_events[0] + maxdur) * fs)])
+        plt.savefig(runid + '_firstsnd.png')
         plt.close()
     return fs, port_events, snd_events, port
 
@@ -84,12 +84,11 @@ def scla(soundfile=None, logfile=None, **kwargs):
     for evt in range(len(snds)):
         datasets['Lower Bound'].append(snds[evt] - pcodes[evt])
         datasets['Upper Bound'].append(snds[evt] - pcodes[evt] +
-                                       float(log.events[evt].data['Uncertainty (Time)'])*0.0001)  # Uncertainty in seconds
+                                       float(log.events[evt].data['Uncertainty (Time)']) * 0.0001)  # Uncertainty in seconds
     td, pl = timing(port, pcodes, snds, fs, **kwargs)
     datasets['Port Time Diffs'] = td['pcodes']
     datasets['Snd Time Diffs'] = td['snds']
     datasets['Port Code Lengths'] = pl
-#    import pdb; pdb.set_trace()
     return stdStats(datasets)
 
 
@@ -98,13 +97,13 @@ def timing(port, pcodes, snds, fs, maxdur=0, thresh=0, **kwargs):
     timediffs = {'pcodes': [], 'snds': []}
     portlengths = []
     for p in range(1, len(pcodes)):
-        timediffs['pcodes'].append(pcodes[p] - pcodes[p-1])
+        timediffs['pcodes'].append(pcodes[p] - pcodes[p - 1])
     for s in range(1, len(snds)):
-        timediffs['snds'].append(snds[s] - snds[s-1])
+        timediffs['snds'].append(snds[s] - snds[s - 1])
     for p in pcodes:
-        span = range(int(p*fs) + 1, int((p+maxdur*1000)*fs))
+        span = range(int(p * fs) + 1, int((p + maxdur * 1000) * fs))
         for pt in span:
             if port[pt] < thresh:
-                portlengths.append(pt/fs - p)
+                portlengths.append(pt / fs - p)
                 break
     return timediffs, portlengths

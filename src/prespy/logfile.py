@@ -29,10 +29,10 @@ class Event:
                      for h in header}
         self.etype = self.data['Event Type']
         self.code = self.data['Code']
-        self.time = float(self.data['Time'])/10  # In ms
+        self.time = float(self.data['Time']) / 10  # In ms
 
     def __str__(self):
-        return self.etype+':'+self.code+':'+str(self.time)
+        return self.etype + ':' + self.code + ':' + str(self.time)
 
     def __repr__(self):
         return str(self)
