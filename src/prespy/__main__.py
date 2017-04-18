@@ -1,4 +1,4 @@
-from prespy.scla import ExtractError, scla
+from prespy.scla import ExtractError, scla, datasets
 from prespy.__about__ import __version__, __title__
 import sys
 import argparse
@@ -17,6 +17,7 @@ def scla_script():
     parser.add_argument('--version', action='version', version='scla {} ({} variant)'.format(__version__, __title__))
     parser.add_argument('--precision', '-p', help='Limit the precision of reported values to this many decimal places', default=3, type=int)
     parser.add_argument('--results', '-r', help='Limit the results to only fields of interest', choices=datasets, default=list(datasets.keys()), nargs='+')
+    parser.add_argument('--plot', help='Plot the first sound to a png file detected for visual inspection - requires matplotlib to be installed', action='store_true')
 
     cmdargs = vars(parser.parse_args())
     precision = cmdargs.pop('precision')
