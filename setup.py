@@ -58,6 +58,6 @@ setup(
     include_package_data=True,
     keywords=['Presentation', 'NBS', 'logfile'],
     entry_points={
-        'console_scripts': ['pres-scla=prespy.__main__:scla'],
+        'console_scripts': ['pres-scla=prespy.__main__:scla_script'],
     }
 )
