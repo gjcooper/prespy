@@ -1,7 +1,8 @@
 # coding: utf-8
 from __future__ import division
 import statistics as stat
-from ..logfile import load
+from prespy.logfile import load
+from copy import deepcopy
 import wave
 import struct
 
@@ -44,7 +45,7 @@ def stdStats(datasets):
         stats[d]['mean'] = stat.mean(data)
         stats[d]['min'] = min(data)
         stats[d]['max'] = max(data)
-        stats[d]['stddev'] = stat.std(data)
+        stats[d]['stddev'] = stat.stdev(data)
         stats[d]['rawdata'] = data
     return stats
 
@@ -93,7 +94,7 @@ def scla(soundfile=None, logfile=None, **kwargs):
     if (len(log.events) != len(pcodes)) or (len(pcodes) != len(snds)):
         raise ExtractError(log.events, pcodes, snds)
 
-    thisdata = datasets.deepcopy()
+    thisdata = deepcopy(datasets)
     for evt in range(len(snds)):
         # Uncertainty in seconds
         uncertainty = float(log.events[evt].data['Uncertainty (Time)']) * 0.0001
