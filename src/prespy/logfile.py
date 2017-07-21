@@ -71,7 +71,7 @@ class Record:
             raise LoadError('Err: second line does not contain timestamp')
         # Grab Logfile Header
         for line in lines[l:]:
-            if line.startswith('Subject'):
+            if line.startswith('Subject') or line.startswith('Trial'):
                 hline = line.split('\t')
                 unc_types = [' (Duration)', ' (Time)']
                 hline = [h + unc_types.pop() if h == 'Uncertainty' else h
@@ -88,7 +88,10 @@ class Record:
         self.events = []
         for line in takewhile(lambda x: len(x) > 0, lines[l:]):
             self.events.append(Event(line.split('\t'), self.header))
-        self.subjectID = self.events[0].data['Subject']
+        try:
+            self.subjectID = self.events[0].data['Subject']
+        except KeyError:
+            self.subjectID = ''
 
     def segment(self, smarker, emarker):
         self.segments = []
