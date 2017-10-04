@@ -1,5 +1,6 @@
-from prespy.scla import ExtractError, scla, datasets
-from prespy.__about__ import __version__, __title__
+from .sndan import scla, datasets
+from .__about__ import __version__, __title__
+from .exceptions import ExtractError
 import sys
 import argparse
 

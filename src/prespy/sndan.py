@@ -1,39 +1,13 @@
 # coding: utf-8
 from __future__ import division
 import statistics as stat
-from prespy.logfile import load
+from .logfile import load
+from .exceptions import ExtractError, SoundError
 from copy import deepcopy
 import wave
 import struct
 
 datasets = {'Port_to_Port': None, 'Snd_to_Snd': None, 'Port_Length': None, 'Snd_Upper_Bound': [], 'Snd_Lower_Bound': []}
-
-
-class ExtractError(Exception):
-    """Raised when an extraction goes wrong"""
-    def __init__(self, logData, portData, sndData):
-        super(ExtractError, self).__init__()
-        self.logData, self.portData, self.sndData = logData, portData, sndData
-        self.message = 'Extraction error, detected code lengths do not match'
-
-    def __str__(self):
-        """Represent this error as a string"""
-        elements = [self.message, len(self.logData), len(self.portData), len(self.sndData)]
-        return '{}\nLengths: Log({}), Port({}), Snds({})'.format(*elements)
-
-
-class ConvertError(Exception):
-    """Raised when a log file number was not converted successfully"""
-    def __init__(self, udat):
-        super().__init__()
-        self.udat = udat
-
-
-class SoundError(Exception):
-    """raised when there is an issue loading the soundfile"""
-    def __init__(self, msg):
-        super().__init__()
-        self.msg = msg
 
 
 def stdStats(datasets):
