@@ -24,6 +24,14 @@ def stdStats(datasets):
     return stats
 
 
+def _exceeds_threshold(value, threshold):
+    """If the threshold is negative, determine if value is more negative
+    if the threshold is positive, determine is the value is more positive"""
+    if threshold < 0:
+        return value < threshold
+    return value > threshold
+
+
 def extract_channel_events(channel, maxdur=0.012, thresh=0.2, samplerate=44100):
     '''From a single channel, extract events that reach *thresh*old and last
     for *maxdur*'''
@@ -31,7 +39,7 @@ def extract_channel_events(channel, maxdur=0.012, thresh=0.2, samplerate=44100):
     lastevt = -20000
     for index, value in enumerate(channel):
         if index - lastevt > maxdur * samplerate:
-            if abs(value) > thresh:
+            if _exceeds_threshold(value, thresh):
                 events.append(index / samplerate)
                 lastevt = index
     return events
