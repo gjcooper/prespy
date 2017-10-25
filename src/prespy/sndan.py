@@ -6,14 +6,23 @@ from .exceptions import ExtractError, SoundError
 from copy import deepcopy
 import wave
 import struct
+import warnings
+import logging
 
 datasets = {'Port_to_Port': None, 'Snd_to_Snd': None, 'Port_Length': None, 'Snd_Upper_Bound': [], 'Snd_Lower_Bound': []}
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setFormatter(logging.Formatter(fmt='%(asctime)s - %(levelname)s: %(message)s'))
+logger.addHandler(ch)
 
 
 def stdStats(datasets):
     """Run the full gamut of standard stats on each dataset"""
     stats = {}
     for d in datasets:
+        logger.info('Calculating stats for %s', d)
         stats[d] = {}
         data = datasets[d]
         stats[d]['mean'] = stat.mean(data)
@@ -52,12 +61,14 @@ def _fix_for_sigchange(kwargs):
             raise RuntimeError('maxdur argument in arguments AND either snddur or portdur in arguments')
         kwargs['snddur'] = kwargs['maxdur']
         kwargs['portdur'] = kwargs['maxdur']
+        logger.warning('modifying keyword arguments: %s', kwargs)
         warnings.warn('maxdur argument is deprecated and will be removed in a future release', DeprecationWarning)
     if 'thresh' in kwargs:
         if 'sndthresh' in kwargs or 'portthresh' in kwargs:
             raise RuntimeError('thresh argument in arguments AND either sndthresh or portthresh in arguments')
         kwargs['sndthresh'] = kwargs['thresh']
         kwargs['portthresh'] = kwargs['thresh']
+        logger.warning('modifying keyword arguments: %s', kwargs)
         warnings.warn('thresh argument is deprecated and will be removed in a future release', DeprecationWarning)
     return kwargs
 
@@ -84,7 +95,7 @@ def extract_sound_events(soundfile, schannel=1, plot=False, runid='scla', **kwar
         try:
             import matplotlib.pyplot as plt
         except ImportError:
-            print('matplotlib not found, skipping plot of first sound')
+            logger.warning('matplotlib not found, skipping plot of first sound')
         plt.plot(snd[int(snd_events[0] * fs) - 100:int((snd_events[0] + kwargs['snddur']) * fs)])
         plt.savefig(runid + '_firstsnd.png')
         plt.close()

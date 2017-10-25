@@ -3,6 +3,7 @@ from .exceptions import LoadError
 from datetime import datetime
 from itertools import takewhile
 import os
+import logging
 
 
 class Experiment:
@@ -102,7 +103,7 @@ class Record:
                 self.segments.append([])
             elif item.code == emarker:
                 if not inblock:
-                    print('Warning: found end block before start block')
+                    logger.warning('Warning: found end block before start block')
                 inblock = False
             elif inblock:
                 self.segments[-1].append(item)
