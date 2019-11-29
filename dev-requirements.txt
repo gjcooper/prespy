@@ -10,11 +10,11 @@ click==6.7                # via flask, pip-tools
 coverage==4.3.4
 docopt==0.6.2             # via grip
 first==2.0.1              # via pip-tools
-flask==0.12               # via grip
+flask==1.0                # via grip
 grip==4.3.2
 idna==2.7                 # via requests
 itsdangerous==0.24        # via flask
-jinja2==2.9.5             # via flask
+jinja2==2.10.3            # via flask
 markdown==2.6.8           # via grip
 markupsafe==0.23          # via jinja2
 path-and-address==2.0.1   # via grip
