@@ -44,5 +44,5 @@ six==1.10.0
     # via pip-tools
 urllib3==1.24.3
     # via requests
-werkzeug==0.15.3
+werkzeug==0.15.5
     # via flask
