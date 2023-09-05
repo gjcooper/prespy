@@ -29,7 +29,7 @@ def stdStats(datasets):
         stats[d]['min'] = min(data)
         stats[d]['max'] = max(data)
         stats[d]['stddev'] = stat.stdev(data)
-        stats[d]['rawdata'] = data
+        stats[d]['rawdata'] = data[:]
     return stats
 
 
