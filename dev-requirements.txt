@@ -6,7 +6,7 @@
 #
 certifi==2019.11.28
     # via requests
-chardet==3.0.4
+charset-normalizer==3.4.2
     # via requests
 click==6.7
     # via
@@ -38,7 +38,7 @@ pip-tools==1.8.0
     # via -r dev-requirements.in
 pygments==2.7.4
     # via grip
-requests==2.20.0
+requests==2.32.4
     # via grip
 six==1.10.0
     # via pip-tools
